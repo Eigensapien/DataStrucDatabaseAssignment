@@ -1,0 +1,6 @@
+/*
+This needs to have functions for handling most of the operations that are required
+
+this is probably a good place to have stuff for the menu system and whatnot
+
+*/
