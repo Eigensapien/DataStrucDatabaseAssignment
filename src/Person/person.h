@@ -1,16 +1,15 @@
-/*
-Class for a person
-Person Class:
-    int ID
-    string name
-    string level
-    overload all comparison operators to compare ID
-        need Person to Person (for insert) and int to Person (for search) comparison
-*/
-
-
 #ifndef _PERSON_H_
 #define _PERSON_H_
+
+/**************************************************************************************
+ * class Person                                                                       *
+ *                                                                                    *
+ * int ID: the student or faculty ID number of the Person                             *
+ * string name: the Person's name                                                     *
+ * string level: eg. Freshman etc. for students, Professor etc. for Faculty           *
+ *                                                                                    *
+ * Comparison operators are overloaded based on ID number                             *
+ **************************************************************************************/
 
 class Person
 {
@@ -19,25 +18,22 @@ class Person
         string name;
         string level;
 
-    //need overloaded comparison operators
+    //overloaded comparison operators for tree sorting
+    friend bool operator< (const Person& l, const Person& r) {
+        return l.ID <  r.ID;
+    }
+    friend bool operator> (const Person& l, const Person& r) {
+        return l.ID <  r.ID;
+    }
+    friend bool operator<=(const Person& l, const Person& r) {
+        return l.ID <= r.ID;
+    }
+    friend bool operator>=(const Person& l, const Person& r) {
+        return l.ID >= r.ID;
+    }
+    friend bool operator==(const Person& l, const Person& r) {
+        return l.ID == r.ID;
+    }
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 #endif
