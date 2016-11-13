@@ -17,7 +17,7 @@ when doing rollbacks, we will need to be careful to check if the stack is empty 
  * The stack has normal stack functions push(), pop(), and peek(), however the         *
  * stack automatically deletes the bottom element when it exceeds a maximum size.      *
  * This maximum size defaults to 5 but can be changed with the overloaded constructor  *
- * or with the resize() function.                                                      *
+ * or with the resize() function. This keeps memory from getting clogged.              *
  ***************************************************************************************/
 template <class T>
 class RollbackStack

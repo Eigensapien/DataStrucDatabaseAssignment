@@ -17,6 +17,7 @@ class Student : public Person
     public:
         string major;
         double GPA;
+        int advisor;
 };
 
 #endif

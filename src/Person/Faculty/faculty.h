@@ -19,6 +19,7 @@ class Faculty : public Person
     public:
         string dept;
         DList<int> students;
+        int numStudents; //NEED TO UPDATE PROPERLY FOR FILE IO TO WORK
 };
 
 #endif
