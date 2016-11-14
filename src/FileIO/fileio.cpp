@@ -1,33 +1,34 @@
-
-
-
-
-
-
-
-
-
-
-
-
+#include <iostream>
+#include <string>
+#include "../BSTree/bstree.h"
+#include "../People/Faculty/List/listnode.h" //to navigate faculty list
 
 
 
 
 //ABSOLUTELY NONE OF THIS HAS BEEN TESTED
 
-//still need input from file and check for file
-
-//input from fle should check for formatting errors
-
-//if error is found, exit. tell user to fix files or delete them
-
-
-//need to parse: strings, ints
 
 
 
-//this function returns an int error code and modifies its first argument directly by adding stuff from the file to a (hopefully) empty tree
+
+
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//                importStudentTree()                               importStudentTree()
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+/**************************************************************************************
+ * int importStudentTree(BSTree<Student> *tree, string filename)                      *
+ *                                                                                    *
+ * This function imports the student data stored at filename and adds the students to *
+ * the BST stored at tree.                                                            *
+ *                                                                                    *
+ * Returns an error code                                                              *
+ * 0: imported properly                                                               *
+ * 1: import failed                                                                   *
+ **************************************************************************************/
+
 int importStudentTree(BSTree<Student> *tree, string filename)
 {
     ifstream ifs;
@@ -42,12 +43,13 @@ int importStudentTree(BSTree<Student> *tree, string filename)
     }
     
     string currLine;
-    getline(ifs, currLine); //First line should be "_STARTSTUDENT_". This gives a way to know when to stop.
+    getline(ifs, currLine); //First line should be "_STARTSTUDENT_"
     
     if (currLine != "_STARTSTUDENT_")
     {                               //output error and exit function without importing.
         if (ifs.is_open()) { ifs.close(); };
-        cout << "Error: Student file does not begin with _STARTSTUDENT_ ." << endl;
+        std::cout << "Error: Student file does not begin with _STARTSTUDENT_ ." << std::endl;
+        std::cout << "Please repair or delete the file manually." << std::endl;
         return 1;
     }
     
@@ -56,19 +58,19 @@ int importStudentTree(BSTree<Student> *tree, string filename)
     while (currLine=="_STARTSTUDENT_") //ie. until we run out of students
     {
         getline(ifs, currLine); // ID number
-        stu.ID = std::stoi(currLine); //need to make or find this
+        stu.ID = std::stoi(currLine); //convert to int
         
-        getline(ifs, stu.name); //name
+        getline(ifs, stu.name);  //name
         getline(ifs, stu.level); //level
         getline(ifs, stu.major); //major
         
         getline(ifs, currLine); //GPA
-        stu.GPA = std::stod(currLine); //need to make this or find this
+        stu.GPA = std::stod(currLine); //convert to double
         
         getline(ifs,currLine); //advisor
-        stu.advisor = std::stoi(currLine); //need to make or find this
+        stu.advisor = std::stoi(currLine); //convert to int
         
-        tree->insert(stu); //place them in the tree
+        tree->insert(stu); //place the student in the tree
         
         getline(ifs, currLine); // "_STARTSTUDENT_" if there is another, blank otherwise
     }
@@ -76,13 +78,22 @@ int importStudentTree(BSTree<Student> *tree, string filename)
     std::cout << "Student data has been imported." << std::endl;
 }
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//                importFacultyTree()                               importFacultyTree()
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+/**************************************************************************************
+ * int importFacultyTree(BSTree<Faculty> *tree, string filename)                      *
+ *                                                                                    *
+ * This function imports the faculty data stored at filename and adds the faculty to  *
+ * the BST stored at tree.                                                            *
+ *                                                                                    *
+ * Returns an error code                                                              *
+ * 0: imported properly                                                               *
+ * 1: import failed                                                                   *
+ **************************************************************************************/
 
-
-
-
-//this function returns an int error code and modifies its first argument directly by adding stuff from the file to a (hopefully) empty tree
-int importStudentTree(BSTree<Student> *tree, string filename)
+int importFacultyTree(BSTree<Faculty> *tree, string filename)
 {
     ifstream ifs;
     
@@ -96,12 +107,13 @@ int importStudentTree(BSTree<Student> *tree, string filename)
     }
     
     string currLine;
-    getline(ifs, currLine); //First line should be "_STARTFACULTY_". This gives a way to know when to stop.
+    getline(ifs, currLine); //First line should be "_STARTFACULTY_"
     
     if (currLine != "_STARTFACULTY_")
     {                               //output error and exit function without importing.
         if (ifs.is_open()) { ifs.close(); };
-        cout << "Error: Faculty file does not begin with _STARTFACULTY_ ." << endl;
+        std::cout << "Error: Faculty file does not begin with _STARTFACULTY_ ." << std::endl;
+        std::cout << "Please repair or delete the file manually." << std::endl;
         return 1;
     }
     
@@ -111,55 +123,31 @@ int importStudentTree(BSTree<Student> *tree, string filename)
     while (currLine=="_STARTFACULTY_") //ie. until we run out of faculty
     {
         getline(ifs, currLine); // ID number
-        fac.ID = std::stoi(currLine); //need to make or find this
+        fac.ID = std::stoi(currLine); //convert to int
         
-        getline(ifs, fac.name); //name
+        getline(ifs, fac.name);  //name
         getline(ifs, fac.level); //level
-        getline(ifs, fac.dept); //dept
+        getline(ifs, fac.dept);  //dept
         
         getline(ifs, currLine); //number of students
-        numStu = std::stoi(currLine); //need to make this or find this
+        numStu = std::stoi(currLine); //convert to int
         
         for (int i=0; i<numStu; ++i) //loop over list of students
         {
             getline(ifs, currLine); //student's ID
-            fac.students.insert( std::stoi(currLine) );
+            fac.students.insert( std::stoi(currLine) ); //convert to int and add to list
         }
         
-        tree->insert(fac); //put them in the tree
+        tree->insert(fac); //put the faculty in the tree
         
         getline(ifs, currLine); // "_STARTFACULTY_" if there are more, blank otherwise
     }
     std::cout << "Faculty data has been imported." << std::endl;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#include <iostream>
-#include <string>
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//                saveStudentTreeToFile()                       saveStudentTreeToFile()
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 void saveStudentTreeToFile(BSTree<Student> *tree, std::string filename)
 {
@@ -188,8 +176,11 @@ void saveStudentTreeToFile(BSTree<Student> *tree, std::string filename)
 	saveStuRecur(tree->root, ofs);
 }
 
-// Helper Functions for saving students
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//                saveStudent helpers                               saveStudent helpers
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+//Recursive pre-order traversal
 void saveStuRecur(TreeNode<Student> *root, ofstream ofs)
 {
 	stuToFile(root->data, ofs);
@@ -197,6 +188,7 @@ void saveStuRecur(TreeNode<Student> *root, ofstream ofs)
 	saveStuRecur(root->right, ofs);
 }
 
+//output to file
 void stuToFile(Student stu, ofstream ofs);
 {
     ofs << "_STARTSTUDENT_" << std::endl;
@@ -208,7 +200,9 @@ void stuToFile(Student stu, ofstream ofs);
 	ofs << stu.advisor << std::endl;
 }
 
-//basically the same for faculty
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//                saveFacultyTreeToFile()                       saveFacultyTreeToFile()
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 void saveFacultyTreeToFile(BSTree<Faculty> *tree, std::string filename)
 {
@@ -237,8 +231,12 @@ void saveFacultyTreeToFile(BSTree<Faculty> *tree, std::string filename)
 	saveFacRecur(tree->root, ofs);
 }
 
-// Helper Functions for saving faculty
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//                saveFaculty helpers                               saveFaculty helpers
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+//Recursive pre-order traversal
 void saveFacRecur(TreeNode<Faculty> *root, ofstream ofs)
 {
 	facToFile(&(root->data), ofs);
@@ -246,6 +244,7 @@ void saveFacRecur(TreeNode<Faculty> *root, ofstream ofs)
 	saveFacRecur(root->right, ofs);
 }
 
+//output to file
 void facToFile(Faculty *fac, ofstream ofs)
 {
 	ofs << fac->ID << std::endl;
@@ -253,18 +252,16 @@ void facToFile(Faculty *fac, ofstream ofs)
 	ofs << fac->level << std::endl;
 	ofs << fac->dept << std::endl;
 	ofs << fac->numStudents << std::endl;
-	facStuToFile(fac, ofs); //this function should go through the list and save each students id number
+	facStuToFile(fac, ofs);
 }
 
+//output list of students
 void facStuToFile(Faculty *fac, ofstream ofs)
 {
-	ListNode<int> *curr = fac->students->front; //make sure this matches the list implimentation and list has front as protected, not private
+	ListNode<int> *curr = fac->students->front;
 	for (int i=0; i<fac->numStudents; ++i)
 	{
 		ofs << curr->data << std::endl;
 		curr = curr->next;
 	}
 }
-
-
-

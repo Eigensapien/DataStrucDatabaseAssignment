@@ -16,8 +16,8 @@ class RollbackNode
     */
     public:
         T data;
-        RollbackNode *above;
-        RollbackNode *below;
+        RollbackNode<T> *above;
+        RollbackNode<T> *below;
         RollbackNode();
         ~RollbackNode();
         RollbackNode(T d);
