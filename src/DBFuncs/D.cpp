@@ -35,54 +35,36 @@ class Database
 		
 		void rollback(); //13
 		int exit(); //14
+	
+		BST studentBST;
+		BST facultyBST;
+	
 
 };
 
-#include <string>
 
-int promptForStudentID() 
-{
-	cout << "\tEnter student ID number: ";
-	cin >> studentID;
-	studentID = stoi(studentID); //from your
-	if (!studentBST.search(studentID)) {
-		cout << "Student \"" << studentID << "\"  does not exist." << endl;
-		promptForStudentID();
-	}
-	else 
-		return studentID:
-}
-
-int promptForFacultyID() 
-{
-	cout << "\tEnter faculty ID number: ";
-	cin >> facultyID;
-	facultyID = stoi(facultyID); //from your
-	if (!studentBST.search(facultyID)) {
-		cout << "Student \"" << facultyID << "\"  does not exist." << endl;
-		promptForID();
-	}
-	else 
-		return facultyID:
-}
-
-
-
-
-
-
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//                printStudents                              		 printStudents 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 void Database::printAllStudents() {
-	//Option 1, in order traversal, prints beginning with minimum student ID
-	cout << "Students: " << endl;
-	studentBST.inOrderPrint(masterStudent.minBST()); 
+	cout << "Students by ascending ID: " << endl;
+	studentBST.printTree(); 
 }
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//                printFaculty                              		 printFaculty 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 void Database::printAllFaculty() {
 	//Option 1, in order traversal, prints beginning with minimum faculty ID
 	cout << "Faculty: " << endl;
-	facultyBST.inOrderPrint(masterFaculty.minBST()); 
+	facultyBST.printTree(); 
 }
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//                findStudent                              		 findStudent 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 void Database::findStudent(); //3
 {
@@ -96,6 +78,9 @@ void Database::findStudent(); //3
 		cout << "Student \"" << studentID << "\"  does not exist." << endl;
 }
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//                findFaculty                             	 		 findFaculty 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 void Database::findFaculty(); //4
 {
@@ -108,6 +93,10 @@ void Database::findFaculty(); //4
 	else
 		cout << "Faculty member \"" << facultyID << "\"  does not exist." << endl;
 }
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//                findMyAdvisor                              		 findMyAdvisor 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 void Database::myAdvisorIs(); //5 
 {
@@ -123,6 +112,9 @@ void Database::myAdvisorIs(); //5
 	else
 		cout << "Student \"" << studentID << "\" does not exist." << endl;
 }
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//                printAdvisees                              		 printAdvisees 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 void Database::myAdviseesAre(); //6
 {
@@ -139,6 +131,10 @@ void Database::myAdviseesAre(); //6
 		cout << "Faculty member does not exist." << endl;
 }
 
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//                classStanding                              		 classStanding 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 string Database::promptForClass()
 {
@@ -162,6 +158,10 @@ string Database::promptForClass()
 		promptForClass();
 	}
 }
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//                addStudent                              		 addStudent 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 void Database::addStudent(); //7
 {
@@ -189,6 +189,10 @@ void Database::addStudent(); //7
 	//NEEDS TO HAVE A SAVE TREE FUNCTION SO WE CAN DO ROLLBACK
 }
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//                deleteStudent                              		 deleteStudent 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 void Database::deleteStudent(); {
 	//option 8
 	//NEEDS TO HAVE A SAVE TREE FUNCTION SO WE CAN DO ROLLBACK
@@ -206,6 +210,10 @@ void Database::deleteStudent(); {
 	else
 		cout << "Student \"" << studentID << "\" does not exist." << endl;
 }
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//                professorship                              		 professorship 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 string Database::professorship()
 {
@@ -229,6 +237,10 @@ string Database::professorship()
 		professorship();
 	}
 }
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//                addFaculty                              		 addFaculty 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 void Database::addFaculty(); //9
 {
@@ -256,6 +268,10 @@ void Database::addFaculty(); //9
 }
 
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//                deleteFaculty                              		 deleteFaculty 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 void Database::deleteFaculty(int facultyID); //10
 {
 	/*This block of code 
@@ -279,11 +295,22 @@ void Database::deleteFaculty(int facultyID); //10
 
 }
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//                changeAdvisor                              		 changeAdvisor 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 void Database::changeAdvisor(int studentID); //11
 {
-
+	/*
+	needs to remove from advisor's list & change new advisor
+	*/
+	
 }
 
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//                removeAdvisee                              		 removeAdvisee 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 void Database::removeAdvisee(int facultyID); //12
 {
@@ -292,17 +319,25 @@ void Database::removeAdvisee(int facultyID); //12
 	cin >> facultyID;
 	facultyID = stringToInt(facultyID);
 
-	if (facultyBST.search(facultyID)
+	if (facultyBST.search(facultyID) 
+	{
 		cout << "\tEnter student ID: " << endl;
 		cin >> studentID;
-		studentID = stringToInt(studentID);
-		if (studentBST.search(studentID) {
-			//SEARCH IF 
+		studentID = stoi(studentID);
+		if (studentBST.search(studentID) 
+		{
+			
+			//check is student is an advisee of faculty
+				//if true, remove from faculty list
+				//remove from student record, and assign a new faculty advisor
+				//if false, cout << "Student #" << studentID << " is not an advisee of Faculty #" << facultyID << "." << endl;
 		}
-		
-
+		else
+			cout << "Student not found." << endl;
 	}
-}
+	else
+		cout << "Faculty member not found." << endl;
+
 /*
 faculty must exist
 student must exist
@@ -311,13 +346,23 @@ if all true:
 	delete advisee
 	reassign advisee
 */
+}
+			
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//                rollback                              		 rollback 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 void Database::rollback(); //13
 {
 	//USES STACK TO GET LAST TREE "UNDO BUTTON"
 	//ERIC THATS ALL YOU LOL
+	
 
 }
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//                	exit                              		 		exit 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 int Database::exit(); //14
 {
