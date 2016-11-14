@@ -87,7 +87,7 @@ void Database::findFaculty(); //4
 	cout << "Search by faculty ID number" << endl;
 	cout << "\tEnter faculty ID number: ";
 	cin >> facultyID;
-	facultyID = stringToInt(facultyID);
+	facultyID = stoi(facultyID);
 	if facultyBST.search(facultyID)
 		cout << facultyBST.print(facultyID);
 	else
@@ -103,7 +103,7 @@ void Database::myAdvisorIs(); //5
 	cout << "Search student's faculty advisor" << endl;
 	cout << "\tEnter student ID number: ";
 	cin >> studentID;
-	studentID = stringToInt(studentID);
+	studentID = stoi(studentID);
 	if studentBST.search(studentID)
 	{
 		//GET FACULTY ID NUMBER
@@ -121,7 +121,7 @@ void Database::myAdviseesAre(); //6
 	cout << "Search for advisees" << endl;
 	cout << "\tEnter faculty ID number: ";
 	cin >> facultyID;
-	facultyID = stringToInt(facultyID);
+	facultyID = stoi(facultyID);
 	if facultyBST.search(facultyID)
 	{
 		//GET ALL STUDENTS USE FOR LOOP TO PRINT ALL
@@ -141,7 +141,7 @@ string Database::promptForClass()
 	//this block of code prompts for student's class standing level and reprompts if invalid input
 	cout << "Enter student's class standing: \n\t(1) Freshman \n\t(2) Sophomore \n\t (3) Junior \n\t(4) Senior \n\t(5) Graduate student" << endl;
 	cin >> classLevel;
-	classLevel = stringToInt(classLevel);
+	classLevel = stoi(classLevel);
 	if (classLevel ==1)
 		return "Freshman";
 	else if (classLevel ==2)
@@ -199,7 +199,7 @@ void Database::deleteStudent(); {
 	cout << "Delete student from records" << endl;
 	cout << "\tEnter student ID: " << endl;
 	cin >> studentID;
-	studentID = stringToInt(studentID);
+	studentID = stoi(studentID);
 
 	if studentBST.search(studentID)
 	{
@@ -220,7 +220,7 @@ string Database::professorship()
 	//this block of code prompts for professorship level and reprompts if invalid input
 	cout << "Enter faculty member's level of professorship: \n\t(1) Full Professor \n\t(2) Assistant Professor \n\t (3) Associate Professor \n\t(4) Adjunct Professor \n\t(5) Lecturer" << endl;
 	cin >> profLevel;
-	profLevel = stringToInt(classLevel);
+	profLevel = stoi(classLevel);
 	if (profLevel ==1)
 		return "Full Professor";
 	else if (profLevel ==2)
@@ -272,7 +272,7 @@ void Database::addFaculty(); //9
 //                deleteFaculty                              		 deleteFaculty 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-void Database::deleteFaculty(int facultyID); //10
+void Database::deleteFaculty(); //10
 {
 	/*This block of code 
 	1) deletes faculty from records
@@ -283,7 +283,7 @@ void Database::deleteFaculty(int facultyID); //10
 	cout << "Delete faculty from records" << endl;
 	cout << "\tEnter faculty ID: " << endl;
 	cin >> facultyID;
-	facultyID = stringToInt(facultyID);
+	facultyID = stoi(facultyID);
 	if facultyBST.search(facultyID) {
 		facultyBST.delete(int facultyID);
 		//NEED TO REASSIGN all STUDENTS TO A NEW ADVISOR
@@ -299,7 +299,7 @@ void Database::deleteFaculty(int facultyID); //10
 //                changeAdvisor                              		 changeAdvisor 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-void Database::changeAdvisor(int studentID); //11
+void Database::changeAdvisor(); //11
 {
 	/*
 	needs to remove from advisor's list & change new advisor
@@ -312,12 +312,12 @@ void Database::changeAdvisor(int studentID); //11
 //                removeAdvisee                              		 removeAdvisee 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-void Database::removeAdvisee(int facultyID); //12
+void Database::removeAdvisee(); //12
 {
 	cout << "Remove Advisee from faculty record" << endl;
 	cout << "\tEnter faculty ID: " << endl;
 	cin >> facultyID;
-	facultyID = stringToInt(facultyID);
+	facultyID = stoi(facultyID);
 
 	if (facultyBST.search(facultyID) 
 	{
@@ -326,11 +326,15 @@ void Database::removeAdvisee(int facultyID); //12
 		studentID = stoi(studentID);
 		if (studentBST.search(studentID) 
 		{
-			
-			//check is student is an advisee of faculty
-				//if true, remove from faculty list
+			x = FACULTY.find(studentID); //need help on how to use facultynode .find()
+			if (x==-1)
+				cout << "Student #" << studentID << " is not an advisee of Faculty #" << facultyID << "." << endl;
+			else
+			{
+				FACULTY.remove(studentID); //again, how to use facultynode .remove()
+				//call function to reassign 
 				//remove from student record, and assign a new faculty advisor
-				//if false, cout << "Student #" << studentID << " is not an advisee of Faculty #" << facultyID << "." << endl;
+			}	
 		}
 		else
 			cout << "Student not found." << endl;
