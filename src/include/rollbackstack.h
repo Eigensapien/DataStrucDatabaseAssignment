@@ -20,9 +20,9 @@ class RollbackStack
         RollbackStack();
         RollbackStack(int max);
         ~RollbackStack();
-        T peek();
-        T pop();
-        void push(T d);
+        T* peek();
+        T* pop();
+        void push(T *d);
         void resize(int newSize);
         bool isEmpty();
     
@@ -76,7 +76,7 @@ RollbackStack<T>::~RollbackStack()
 {
     while ( !isEmpty() )
     {
-        pop();
+        delete pop(); //assumes pointers being stored are dynamically allocated
     }
 }
 
@@ -85,14 +85,13 @@ RollbackStack<T>::~RollbackStack()
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 template <class T>
-T RollbackStack<T>::peek()
+T* RollbackStack<T>::peek()
 {
     //check for empty stack
     if ( isEmpty() )
     {
         std::cout << "Error: Rollback stack is empty. Cannot peek." << std::endl;
-        //this should never happen since isEmpty() is checked before each peek(),
-        //but a little error message may help with debugging if it comes up.
+        return NULL;
     }
     else
     {
@@ -105,17 +104,16 @@ T RollbackStack<T>::peek()
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 template <class T>
-T RollbackStack<T>::pop()
+T* RollbackStack<T>::pop()
 {
     //check for empty stack
     if ( isEmpty() )
     {
         std::cout << "Error: Rollback stack is empty. Cannot pop." << std::endl;
-        //this should never happen since isEmpty() is checked before each pop(),
-        //but a little error message may help with debugging if it comes up.
+        return NULL;
     }
     
-    T data = top->data;
+    T* data = top->data;
     
     //check cases for deleting top
     if (size==1) //top is bottom
@@ -142,7 +140,7 @@ T RollbackStack<T>::pop()
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 template <class T>
-void RollbackStack<T>::push(T data)
+void RollbackStack<T>::push(T *data)
 {
     //need to check cases
     //case 1: stack is empty
@@ -211,12 +209,5 @@ bool RollbackStack<T>::isEmpty()
 {
     return size==0;
 }
-
-
-
-
-
-
-
 
 #endif

@@ -13,8 +13,8 @@ using std::stod;
 using std::ofstream;
 using std::ifstream;
 
-string stuPath = "../../saved/studentTable";
-string facPath = "../../saved/facultyTable";
+string stuPath = "../saved/studentTable";
+string facPath = "../saved/facultyTable";
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //                importStudentTree()                               importStudentTree()
@@ -112,10 +112,12 @@ int importFacultyTree(BST<Faculty> *tree, string filename)
     
     string currLine;
     getline(ifs, currLine); //First line should be "_STARTFACULTY_"
+cout << "_start_" << endl;
     
     // if the first line is "_EMPTY_" we can stop. We already have an empty tree.
     if (currLine == "_EMPTY_")
     {
+cout << "_empty_" << endl;
         return 0;
     }
     
@@ -132,6 +134,7 @@ int importFacultyTree(BST<Faculty> *tree, string filename)
     
     while (currLine=="_STARTFACULTY_") //ie. until we run out of faculty
     {
+cout << "while" << endl;
         getline(ifs, currLine); // ID number
         fac.ID = std::stoi(currLine); //convert to int
         
@@ -148,6 +151,7 @@ int importFacultyTree(BST<Faculty> *tree, string filename)
             fac.students.insertFront( std::stoi(currLine) ); //convert to int and add to list
         }
         
+cout << "about to put in tree" << endl;
         tree->insert(fac); //put the faculty in the tree
         
         getline(ifs, currLine); // "_STARTFACULTY_" if there are more, "_ENDFILE_" otherwise
@@ -233,6 +237,9 @@ void saveStudentTreeToFile(BST<Student> *tree, string filename)
 void facStuToFile(Faculty *fac, ofstream *ofs)
 {
     cout << "facStuToFile" << endl;
+    if (fac->numStudents==0) {
+        return;
+    }
 	ListNode<int> *curr = fac->students.front;
 	for (int i=0; i<fac->numStudents; ++i)
 	{

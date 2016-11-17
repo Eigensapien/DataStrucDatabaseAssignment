@@ -10,17 +10,17 @@ template <class T>
 class RollbackNode
 {
     /*
-    This ListNode contains a piece of data with type T
+    This ListNode contains a pointer to data with type T
     There are pointers for the next and prev elements of the list
     The overloaded constructor takes a data T as input
     */
     public:
-        T data;
+        T* data;
         RollbackNode<T> *above;
         RollbackNode<T> *below;
         RollbackNode();
         ~RollbackNode();
-        RollbackNode(T d);
+        RollbackNode(T *d);
 };
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -33,6 +33,7 @@ RollbackNode<T>::RollbackNode()
     /*
     The constructor initializes pointers as NULL
     */
+    data = NULL;
     above = NULL;
     below = NULL;
     std::cout << "Warning: RollbackNode created without data" << std::endl;
@@ -43,7 +44,7 @@ RollbackNode<T>::RollbackNode()
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 template <class T>
-RollbackNode<T>::RollbackNode(T d)
+RollbackNode<T>::RollbackNode(T *d)
 {
     /*
     Overloaded constructor sets pointers to NULL and data to the input
@@ -61,8 +62,9 @@ template <class T>
 RollbackNode<T>::~RollbackNode()
 {
     /*
-    Destructor simply sets all pointers to NULL
+    Destructor sets all pointers to NULL
     */
+    data = NULL;
     above = NULL;
     below = NULL;
 }

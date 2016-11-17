@@ -16,6 +16,10 @@ using std::stoi;
 using std::stod;
 using std::rand;
 
+
+string stuFilePath = "../saved/studentTable";
+string facFilePath = "../saved/facultyTable";
+
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //                Constructor                              		            Constructor
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -37,8 +41,8 @@ Database::Database()
     if ( filesExist() )
     {
         // import databases
-        int stuImportCode = importStudentTree(studentBST, "../../saved/studentTable");
-        int facImportCode = importFacultyTree(facultyBST, "../../saved/facultyTable");
+        int stuImportCode = importStudentTree(studentBST, stuFilePath);
+        int facImportCode = importFacultyTree(facultyBST, facFilePath);
         
         // if import fails, delete BST in case it has been partially modified and make a blank one
         if (stuImportCode==1)
@@ -343,8 +347,6 @@ bool Database::addStudent( int ID
     //create student
     Student stu;
     
-    cout << "diagnostic" << endl;
-    
     //set the student's data fields
     stu.ID      = ID;
     stu.name    = name;
@@ -360,6 +362,7 @@ bool Database::addStudent( int ID
     //update advisor's list of students
     fac->data.students.insertFront(ID);
     fac->data.numStudents++;
+    
     
     //push current tree to the stack
     rollbackPushTrees();
@@ -481,7 +484,7 @@ int Database::advisorPrompt()
 
 string Database::promptForClass()
 {
-	cout << "Enter student's class standing: \n\t(1) Freshman \n\t(2) Sophomore \n\t (3) Junior \n\t(4) Senior \n\t(5) Graduate student" << endl;
+	cout << "Enter student's class standing: \n\t(1) Freshman \n\t(2) Sophomore \n\t(3) Junior \n\t(4) Senior \n\t(5) Graduate student" << endl;
     string userInput;
 	cin >> userInput;
 	int classLevel = stoi(userInput);
@@ -952,13 +955,31 @@ void Database::removeAdvisee() //12
 
 /**************************************************************************************
  * rollbackPushTrees                                                                  *
- * This function pushes both trees to the rollback stack                              *
+ * This function pushes pointers to both trees to the rollback stack                  *
  **************************************************************************************/
 
 void Database::rollbackPushTrees()
 {
-    studentRollback.push(*studentBST);
-    facultyRollback.push(*facultyBST);
+    if ( !studentBST->isEmpty() )
+    {
+        studentRollback.push(NULL);
+    }
+    else
+    {
+        BST<Student> *backupStudent = new BST<Student>;
+        *backupStudent = *studentBST;
+        studentRollback.push(backupStudent);
+    }
+    if ( !facultyBST->isEmpty() )
+    {
+        facultyRollback.push(NULL);
+    }
+    else
+    {
+        BST<Faculty> *backupFaculty = new BST<Faculty>;
+        *backupFaculty = *facultyBST;
+        facultyRollback.push(backupFaculty);
+    }
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -979,8 +1000,33 @@ void Database::rollback() //13
     }
     else
     {
-        *facultyBST = facultyRollback.pop();
-        *studentBST = studentRollback.pop();
+        //rollback faculty
+        BST<Faculty> *backupFaculty;
+        backupFaculty =  facultyRollback.pop();
+        if (backupFaculty==NULL)
+        {
+            delete facultyBST;
+            facultyBST = new BST<Faculty>;
+        }
+        else
+        {
+            delete facultyBST;
+            facultyBST = backupFaculty;
+        }
+        
+        //rollback students
+        BST<Student> *backupStudent;
+        backupStudent =  studentRollback.pop();
+        if (backupStudent==NULL)
+        {
+            delete studentBST;
+            studentBST = new BST<Student>;
+        }
+        else
+        {
+            delete studentBST;
+            studentBST = backupStudent;
+        }
     }
 }
 
@@ -1017,8 +1063,8 @@ void Database::exit() //14
         else if (userInput=="y")
         {
             cout << "Saving data to file." << endl;
-            saveFacultyTreeToFile(facultyBST, "../saved/facultyTable");
-            saveStudentTreeToFile(studentBST, "../saved/studentTable");
+            saveFacultyTreeToFile(facultyBST, facFilePath);
+            saveStudentTreeToFile(studentBST, stuFilePath);
             notSureYet = false;
         }
     }
