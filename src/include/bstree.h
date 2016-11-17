@@ -26,9 +26,9 @@ class BST {
         void print(TreeNode<T>* node);
         void printTree();
         bool deleteN(int k);
-    private:
         TreeNode<T>* root;
         void deleteTree(TreeNode<T>* node);
+    private:
         TreeNode<T>* getSuccessor(TreeNode<T>* d);
 };
 

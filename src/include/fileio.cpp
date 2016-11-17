@@ -1,15 +1,20 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-#include "../BSTree/bstree.h"
-#include "../People/Faculty/List/listnode.h" //to navigate faculty list
+#include "bstree.h"
+#include "listnode.h" //to navigate faculty list
 
 using std::string;
 using std::cout;
 using std::cin;
 using std::endl;
+using std::stoi;
+using std::stod;
 using std::ofstream;
 using std::ifstream;
+
+string stuPath = "../../saved/studentTable";
+string facPath = "../../saved/facultyTable";
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //                importStudentTree()                               importStudentTree()
@@ -28,9 +33,7 @@ using std::ifstream;
 
 int importStudentTree(BST<Student> *tree, string filename)
 {
-    ifstream ifs;
-    
-    ifs.open( filename ); //open the file
+    ifstream ifs ( filename.c_str() ); //open the file
     
     if (!ifs)                       //if the given filename doesn't work,
     {                               //output error and exit function without importing.
@@ -75,7 +78,7 @@ int importStudentTree(BST<Student> *tree, string filename)
         
         tree->insert(stu); //place the student in the tree
         
-        getline(ifs, currLine); // "_STARTSTUDENT_" if there is another, blank otherwise
+        getline(ifs, currLine); // "_STARTSTUDENT_" if there is another, "_ENDFILE_" otherwise
     }
     
     cout << "Student data has been imported." << endl;
@@ -98,9 +101,7 @@ int importStudentTree(BST<Student> *tree, string filename)
 
 int importFacultyTree(BST<Faculty> *tree, string filename)
 {
-    ifstream ifs;
-    
-    ifs.open( filename ); //open the file
+    ifstream ifs ( filename.c_str() ); //open the file
     
     if (!ifs)                       //if the given filename doesn't work,
     {                               //output error and exit function without importing.
@@ -144,22 +145,49 @@ int importFacultyTree(BST<Faculty> *tree, string filename)
         for (int i=0; i<numStu; ++i) //loop over list of students
         {
             getline(ifs, currLine); //student's ID
-            fac.students.insert( std::stoi(currLine) ); //convert to int and add to list
+            fac.students.insertFront( std::stoi(currLine) ); //convert to int and add to list
         }
         
         tree->insert(fac); //put the faculty in the tree
         
-        getline(ifs, currLine); // "_STARTFACULTY_" if there are more, blank otherwise
+        getline(ifs, currLine); // "_STARTFACULTY_" if there are more, "_ENDFILE_" otherwise
     }
     cout << "Faculty data has been imported." << endl;
     return 0;
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//                saveStudent helpers                               saveStudent helpers
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+//output to file
+void stuToFile(Student stu, ofstream *ofs)
+{
+    *ofs << "_STARTSTUDENT_" << endl;
+	*ofs << stu.ID           << endl;
+	*ofs << stu.name         << endl;
+	*ofs << stu.level        << endl;
+	*ofs << stu.major        << endl;
+	*ofs << stu.GPA          << endl;
+	*ofs << stu.advisor      << endl;
+}
+
+//Recursive pre-order traversal
+void saveStuRecur(TreeNode<Student> *root, ofstream *ofs)
+{
+    if ( root != NULL )
+    {
+        stuToFile(root->data, ofs);
+	    saveStuRecur(root->left, ofs);
+	    saveStuRecur(root->right, ofs);
+    }
+}
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //                saveStudentTreeToFile()                       saveStudentTreeToFile()
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-void saveStudentTreeToFile(BST<Student> *tree, std::string filename)
+void saveStudentTreeToFile(BST<Student> *tree, string filename)
 {
 	/*
 	We can save to a file using simple text
@@ -183,7 +211,7 @@ void saveStudentTreeToFile(BST<Student> *tree, std::string filename)
     
     Empty tree creates file with just "_EMPTY_"
 	*/
-	ofstream ofs (filename);
+	ofstream ofs ( filename.c_str() );
     
     if ( tree->isEmpty() )
     {
@@ -191,32 +219,52 @@ void saveStudentTreeToFile(BST<Student> *tree, std::string filename)
     }
     else
     {
-	    saveStuRecur(tree->root, ofs);
+	    saveStuRecur(tree->root, &ofs);
     }
+    ofs << "_ENDFILE_" << endl;
+    ofs.close();
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-//                saveStudent helpers                               saveStudent helpers
+//                saveFaculty helpers                               saveFaculty helpers
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+//output list of students
+void facStuToFile(Faculty *fac, ofstream *ofs)
+{
+    cout << "facStuToFile" << endl;
+	ListNode<int> *curr = fac->students.front;
+	for (int i=0; i<fac->numStudents; ++i)
+	{
+        //print list of students
+		*ofs << curr->data << endl;
+		curr = curr->next;
+	}
+}
+
+//formats and prints data from faculty
+void facToFile(Faculty *fac, ofstream *ofs)
+{
+    cout << "facToFile" << endl;
+    *ofs << "_STARTFACULTY_" << endl;
+	*ofs << fac->ID          << endl;
+	*ofs << fac->name        << endl;
+	*ofs << fac->level       << endl;
+	*ofs << fac->dept        << endl;
+	*ofs << fac->numStudents << endl;
+	facStuToFile(fac, ofs);
+}
 
 //Recursive pre-order traversal
-void saveStuRecur(TreeNode<Student> *root, ofstream ofs)
+void saveFacRecur(TreeNode<Faculty> *root, ofstream *ofs)
 {
-	stuToFile(root->data, ofs);
-	saveStuRecur(root->left, ofs);
-	saveStuRecur(root->right, ofs);
-}
-
-//output to file
-void stuToFile(Student stu, ofstream ofs);
-{
-    ofs << "_STARTSTUDENT_" << std::endl;
-	ofs << stu.ID << std::endl;
-	ofs << stu.name << std::endl;
-	ofs << stu.level << std::endl;
-	ofs << stu.major << std::endl;
-	ofs << stu.GPA << std::endl;
-	ofs << stu.advisor << std::endl;
+    cout << "saveFacRecur" << endl;
+    if ( root != NULL )
+    {
+	    facToFile(&(root->data), ofs);
+        saveFacRecur(root->left, ofs);
+	    saveFacRecur(root->right, ofs);
+    }
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -230,7 +278,7 @@ void saveFacultyTreeToFile(BST<Faculty> *tree, std::string filename)
 	If we use pre-order traversal, then everything will
 	be written to the file in such a manner that reading
 	the file in the order it is written reconstructs the
-	tree exactly. An indicator helps with file import. 
+	tree exactly. An indicator helps with file import.
     Thus, the output file should look like:
 	
     _STARTFACULTY_ //indicator
@@ -247,7 +295,7 @@ void saveFacultyTreeToFile(BST<Faculty> *tree, std::string filename)
     
     Empty tree creates file with just "_EMPTY_"
 	*/
-	ofstream ofs (filename);
+	ofstream ofs ( filename.c_str() );
 	
     if ( tree->isEmpty() )
     {
@@ -255,40 +303,21 @@ void saveFacultyTreeToFile(BST<Faculty> *tree, std::string filename)
     }
     else
     {
-	    saveFacRecur(tree->root, ofs);
+	    saveFacRecur(tree->root, &ofs);
     }
+    ofs << "_ENDFILE_" << endl;
+    ofs.close();
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-//                saveFaculty helpers                               saveFaculty helpers
+//                filesExist                                                 filesExist
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-//Recursive pre-order traversal
-void saveFacRecur(TreeNode<Faculty> *root, ofstream ofs)
+bool filesExist()
 {
-	facToFile(&(root->data), ofs);
-	saveFacRecur(root->left, ofs);
-	saveFacRecur(root->right, ofs);
-}
-
-//output to file
-void facToFile(Faculty *fac, ofstream ofs)
-{
-	ofs << fac->ID          << std::endl;
-	ofs << fac->name        << std::endl;
-	ofs << fac->level       << std::endl;
-	ofs << fac->dept        << std::endl;
-	ofs << fac->numStudents << std::endl;
-	facStuToFile(fac, ofs);
-}
-
-//output list of students
-void facStuToFile(Faculty *fac, ofstream ofs)
-{
-	ListNode<int> *curr = fac->students->front;
-	for (int i=0; i<fac->numStudents; ++i)
-	{
-		ofs << curr->data << std::endl;
-		curr = curr->next;
-	}
+    std::ifstream stuFile (stuPath);
+    bool stuTest = stuFile.good();
+    std::ifstream facFile (facPath);
+    bool facTest = facFile.good();
+    return (facTest && stuTest);
 }

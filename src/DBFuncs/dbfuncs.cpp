@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <stdlib.h> //rand
+#include "dbfuncs.h"
 #include "../BSTree/bstree.h"
 #include "../Person/Faculty/faculty.h"
 #include "../Person/Student/student.h"
@@ -14,48 +15,6 @@ using std::cin;
 using std::stoi;
 using std::stod;
 using std::rand;
-
-
-class Database
-{
-	public:
-		Database();
-		~Database();
-        
-		BST<Student> *studentBST;
-		BST<Faculty> *facultyBST;
-        
-        void showMenu();
-        bool stop; //tells main loop when to stop
-        
-		void printAllStudents(); //1
-		void printAllFaculty(); //2
-        
-		void findStudent(); //3
-		void findFaculty(); //4
-		void myAdvisorIs(); //5
-		void myAdviseesAre(); //6
-        
-		void addStudent(); //7
-		void deleteStudent(); //8
-        
-		void addFaculty(); //9
-		void deleteFaculty(); //10
-        
-		void changeAdvisor(); //11
-		void removeAdvisee(); //12
-        
-		void rollback(); //13
-		void exit(); //14
-    
-    private:
-		string promptForClass(); //prompts for class standing used in addStudent()
-		string professorship(); //prompts for professorship used in addFaculty()
-        
-        void rollbackPushTrees();
-        RollbackStack<BST<Student>> studentRollback;
-        RollbackStack<BST<Faculty>> facultyRollback;
-};
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //                Constructor                              		            Constructor
@@ -169,7 +128,7 @@ void Database::showMenu()
                  break;
         case 10: deleteFaculty();
                  break;
-        case 11: changeAdvisor();
+        case 11: changeAdvisorPrompt();
                  break;
         case 12: removeAdvisee();
                  break;
@@ -190,7 +149,8 @@ void Database::showMenu()
  * printAllStudents                                                                   *
  * This function displays the information for each student by ascending ID            *
  **************************************************************************************/
-void Database::printAllStudents() {
+void Database::printAllStudents()
+{
 	cout << "Students by ascending ID: " << endl;
 	studentBST->printTree();
 }
@@ -204,7 +164,8 @@ void Database::printAllStudents() {
  * This function displays the information for each faculty member by ascending ID     *
  **************************************************************************************/
 
-void Database::printAllFaculty() {
+void Database::printAllFaculty()
+{
 	cout << "Faculty by ascending ID: " << endl;
 	facultyBST->printTree();
 }
@@ -235,7 +196,7 @@ void Database::findStudent() //3
 	if ( stu != NULL) { // student found
 		stu->data.print(); // prints all data on student
     }
-	else {} // student not found
+	else { // student not found
 		cout << "Student \"" << studentID << "\"  does not exist." << endl;
     }
 }
@@ -443,7 +404,7 @@ void Database::addStudentPrompt() //7
                                  , studentAdvisor);
     }
     
-	cout << "Student has been added." << endl;
+	cout << "Student has been added with ID#" << studentID << endl;
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -455,7 +416,7 @@ void Database::addStudentPrompt() //7
  * This is a helper function for addStudentPrompt that asks for an advisor, checks    *
  * that the advisor exists, and returns the ID.                                       *
  **************************************************************************************/
-int advisorPrompt()
+int Database::advisorPrompt()
 {
     //get user input
     string userInput;
@@ -625,7 +586,7 @@ void Database::addFaculty( int ID
  * member to the tree. The rollback stack is updated.                                 *
  **************************************************************************************/
 
-void Database::addFaculty(); //9
+void Database::addFacultyPrompt() //9
 {
 	cout << "Add faculty to records" << endl;
 	
@@ -687,7 +648,7 @@ void Database::addFaculty(); //9
                                  , facultyStudents);
     }
     
-	cout << "Faculty has been added." << endl;
+	cout << "Faculty has been added with ID#" << facultyID << endl;
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -732,7 +693,7 @@ string Database::professorship()
  * advisor, then deletes the faculty member                                           *
  **************************************************************************************/
 
-void Database::deleteFaculty(); //10
+void Database::deleteFaculty() //10
 {
 	cout << "Delete faculty from records" << endl;
 	cout << "\tEnter faculty ID: " << endl;
@@ -781,7 +742,7 @@ void Database::deleteFaculty(); //10
  * user input.                                                                        *
  **************************************************************************************/
 
-void Database::changeAdvisor(int stuID); //11
+void Database::changeAdvisor(int stuID) //11
 {
     //get a pointer to the student node
 	TreeNode<Student> *stu;
@@ -815,7 +776,41 @@ void Database::changeAdvisor(int stuID); //11
         //update fields accordingly
         stu->data.advisor = newFacID;
         oldFac->data.students.remove(stu->data.ID);
+        oldFac->data.numStudents--;
         newFac->data.students.insert(stu->data.ID);
+        newFac->data.numStudents++;
+    }
+}
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//                changeAdvisorPrompt                               changeAdvisorPrompt
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+/**************************************************************************************
+ * changeAdvisor                                                                      *
+ * this function takes is essentially changeAdvisor with an additional prompt for the *
+ * student ID                                                                         *
+ **************************************************************************************/
+void Database::changeAdvisorPrompt()
+{
+    //get user inputs
+    string userInput;
+    int stuID;
+    cout << "Change advisor in student record" << endl;
+    cout << "\tEnter student ID:" << endl;
+    cin >> userInput;
+    stuID = stoi(userInput);
+    
+    //if student exists, call changeAdvisor(stuID)
+    if (studentBST->search(stuID) != NULL)
+    {
+        changeAdvisor(stuID);
+    }
+    else
+    {
+        //student doesn't exist, recursive do-over
+        cout << "Student does not exist. Please try again." << endl;
+        changeAdvisorPrompt();
     }
 }
 
@@ -830,7 +825,7 @@ void Database::changeAdvisor(int stuID); //11
  * prompts the user for the student's new advisor.                                    *
  **************************************************************************************/
 
-void Database::removeAdvisee(); //12
+void Database::removeAdvisee() //12
 {
 	cout << "Remove Advisee from faculty record" << endl;
 	cout << "\tEnter faculty ID: " << endl;

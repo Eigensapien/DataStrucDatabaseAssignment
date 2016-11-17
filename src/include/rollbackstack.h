@@ -91,7 +91,8 @@ T RollbackStack<T>::peek()
     if ( isEmpty() )
     {
         std::cout << "Error: Rollback stack is empty. Cannot peek." << std::endl;
-        return NULL;
+        //this should never happen since isEmpty() is checked before each peek(),
+        //but a little error message may help with debugging if it comes up.
     }
     else
     {
@@ -110,7 +111,8 @@ T RollbackStack<T>::pop()
     if ( isEmpty() )
     {
         std::cout << "Error: Rollback stack is empty. Cannot pop." << std::endl;
-        return NULL;
+        //this should never happen since isEmpty() is checked before each pop(),
+        //but a little error message may help with debugging if it comes up.
     }
     
     T data = top->data;

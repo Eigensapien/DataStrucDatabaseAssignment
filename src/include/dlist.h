@@ -4,7 +4,8 @@
 #include <iostream>
 #include "listnode.h"
 
-using namespace std;
+using std::cout;
+using std::endl;
 
 //--------------------------------------------------------------------
 //            THE LIST
@@ -15,12 +16,11 @@ class DList
     /*
     This class is a template class for a doubly linked list
     */
-    protected:
+    public:
         ListNode<T> *front;
         ListNode<T> *back;
         unsigned int size;
     
-    public:
         DList();
         ~DList();
     

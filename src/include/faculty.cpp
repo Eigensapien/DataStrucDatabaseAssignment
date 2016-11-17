@@ -1,9 +1,9 @@
 #include <iostream>
 #include "faculty.h"
-#include "../../BSTree/bstree.h"
-#include "../Student/student.h"
-#include "../person.h"
-#include "./List/dlist.h"
+#include "bstree.h"
+#include "student.h"
+#include "person.h"
+#include "dlist.h"
 
 void Faculty::print()
 {
@@ -23,7 +23,7 @@ void Faculty::printAdvisees(BST<Student> *studentBST)
     while (curr != NULL)
     {
         stu = studentBST->search(studentID);
-        stu->print();
+        stu->data.print();
         curr = curr->next;
     }
 }

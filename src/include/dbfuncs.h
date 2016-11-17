@@ -2,10 +2,10 @@
 #define _DBFUNCS_H_
 
 #include <string>
-#include "../BSTree/bstree.h"
-#include "../Person/Faculty/faculty.h"
-#include "../Person/Student/student.h"
-#include "../RollbackStack/rollbackstack.h"
+#include "bstree.h"
+#include "faculty.h"
+#include "student.h"
+#include "rollbackstack.h"
 
 using std::string;
 
@@ -38,7 +38,7 @@ class Database
         void addStudentPrompt(); //7
 		void deleteStudent(); //8
         
-		void addFaculty( int ID
+		bool addFaculty( int ID
                        , string name
                        , string level
                        , string dept
