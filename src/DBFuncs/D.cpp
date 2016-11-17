@@ -72,8 +72,9 @@ void Database::findStudent(); //3
 	cout << "\tEnter student ID number: ";
 	cin >> studentID;
 	studentID = stoi(studentID);
-	if studentBST.search(studentID)
-		cout << studentBST.print(studentID);
+    TreeNode<Student> *stu = studentBST.search(studentID);
+	if ( stu != NULL) // search returns pointer to node
+		stu->print(); // prints all data on student
 	else
 		cout << "Student \"" << studentID << "\"  does not exist." << endl;
 }
@@ -88,8 +89,9 @@ void Database::findFaculty(); //4
 	cout << "\tEnter faculty ID number: ";
 	cin >> facultyID;
 	facultyID = stoi(facultyID);
-	if facultyBST.search(facultyID)
-		cout << facultyBST.print(facultyID);
+    TreeNode<Faulty> *fac = facultyBST.search(facultyID);
+	if ( fac != NULL ) // search returns pointer to node
+		fac->print(); // all data on the faculty
 	else
 		cout << "Faculty member \"" << facultyID << "\"  does not exist." << endl;
 }
@@ -103,14 +105,17 @@ void Database::myAdvisorIs(); //5
 	cout << "Search student's faculty advisor" << endl;
 	cout << "\tEnter student ID number: ";
 	cin >> studentID;
-	studentID = stoi(studentID);
-	if studentBST.search(studentID)
+	int studentID = stoi(studentID);
+    TreeNode<Student> *stu = studentBST.search(studentID);
+	if ( stu != NULL )
 	{
-		//GET FACULTY ID NUMBER
-		cout << facultyBST.print(facultyID);
+		TreeNode<Faculty> *fac = facultyBST.search(stu->advisor);
+        fac->print;
 	}
 	else
+    {
 		cout << "Student \"" << studentID << "\" does not exist." << endl;
+    }
 }
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //                printAdvisees                              		 printAdvisees 
@@ -121,11 +126,12 @@ void Database::myAdviseesAre(); //6
 	cout << "Search for advisees" << endl;
 	cout << "\tEnter faculty ID number: ";
 	cin >> facultyID;
-	facultyID = stoi(facultyID);
-	if facultyBST.search(facultyID)
+	int facultyID = stoi(facultyID);
+    TreeNode<Faculty> *fac = facultyBST.search(facultyID);
+	if ( fac != NULL )
 	{
 		//GET ALL STUDENTS USE FOR LOOP TO PRINT ALL
-		cout << facultyBST.print(facultyID);
+		fac->students.printList();
 	}
 	else
 		cout << "Faculty member does not exist." << endl;

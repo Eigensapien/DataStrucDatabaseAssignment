@@ -34,6 +34,37 @@ class Person
     friend bool operator==(const Person& l, const Person& r) {
         return l.ID == r.ID;
     }
+    //overloaded comparison operators for tree searching
+    friend bool operator< (const int l, const Person& r) {
+        return l <  r.ID;
+    }
+    friend bool operator> (const int l, const Person& r) {
+        return l <  r.ID;
+    }
+    friend bool operator<=(const int l, const Person& r) {
+        return l <= r.ID;
+    }
+    friend bool operator>=(const int l, const Person& r) {
+        return l >= r.ID;
+    }
+    friend bool operator==(const int l, const Person& r) {
+        return l == r.ID;
+    }
+    friend bool operator< (const Person& l, const int r) {
+        return l.ID <  r;
+    }
+    friend bool operator> (const Person& l, const int r) {
+        return l.ID <  r;
+    }
+    friend bool operator<=(const Person& l, const int r) {
+        return l.ID <= r;
+    }
+    friend bool operator>=(const Person& l, const int r) {
+        return l.ID >= r;
+    }
+    friend bool operator==(const Person& l, const int r) {
+        return l.ID == r;
+    }
 };
 
 #endif

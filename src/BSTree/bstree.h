@@ -24,6 +24,7 @@ using namespace std;
 /********************************************
  * Template class for a binary search tree  *
  * Each node holds an int key and a T value *
+ * T must have a print() function           *
  ********************************************/
 template <class T>
 class BST {
@@ -31,16 +32,16 @@ class BST {
         BST();
         ~BST();
         void insert(T data);
-        TreeNode* search(int key);
+        TreeNode<T>* search(int key);
         bool isEmpty();
-        TreeNode* getMin();
-        TreeNode* getMax();
-        void print(TreeNode* node);
+        TreeNode<T>* getMin();
+        TreeNode<T>* getMax();
+        void print(TreeNode<T>* node);
         void printTree();
     private:
-        TreeNode* root;
-        void deleteTree(TreeNode* node);
-        getSuccessor(TreeNode* d)
+        TreeNode<T>* root;
+        void deleteTree(TreeNode<T>* node);
+        getSuccessor(TreeNode<T>* d)
 };
 
 
@@ -278,7 +279,7 @@ void BST<T>::print(TreeNode<T>* node)
         return;
     }
     print(node->left);
-    cout << node->data << endl; // need to do this with a print function instead
+    node->data.print(); // Requires data type to have defined print() function
     print(node->right);
 }
 
