@@ -20,15 +20,8 @@ class Faculty : public Person
         string dept;
         DList<int> students;
         int numStudents; //NEED TO UPDATE PROPERLY FOR FILE IO TO WORK
-        void print()
-        {
-            std::cout << "Faculty ID: " << ID      << std::endl;
-            std::cout << "Name:       " << name    << std::endl;
-            std::cout << "Level:      " << level   << std::endl;
-            std::cout << "Department: " << dept    << std::endl;
-            std::cout << "Advisee IDs:" << std::endl;
-            students.printList();
-        }
+        void print();
+        void printAdvisees();
 };
 
 #endif

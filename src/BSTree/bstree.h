@@ -33,13 +33,13 @@ class BST {
         BST();
         ~BST();
         int insert(T data);
-        TreeNode<T>* search(T key);
+        TreeNode<T>* search(int key);
         bool isEmpty();
         TreeNode<T>* getMin();
         TreeNode<T>* getMax();
         void print(TreeNode<T>* node);
         void printTree();
-        bool deleteN(T k);
+        bool deleteN(int k);
     private:
         TreeNode<T>* root;
         void deleteTree(TreeNode<T>* node);
@@ -145,7 +145,7 @@ int BST<T>::insert(T data)
  * Code is largely copied from insert.
  */
 template <class T>
-TreeNode<T>* BST<T>::search(T key)
+TreeNode<T>* BST<T>::search(int key)
 {
     if (isEmpty())
     {
@@ -298,7 +298,7 @@ TreeNode<T>* BST<T>::getSuccessor(TreeNode<T>* d)
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // deletes node with key k and returns true if sucessful, false if unsucessful
 template <class T>
-bool BST<T>::deleteN(T k)
+bool BST<T>::deleteN(int k)
 {
     //if leaf, easy
     //if 1 child, sorta easy
