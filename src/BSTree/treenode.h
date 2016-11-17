@@ -22,7 +22,7 @@ class TreeNode
         TreeNode *right;
         TreeNode();
         ~TreeNode();
-        TreeNode(int k, T d);
+        TreeNode(T d);
 };
 
 template <class T>
@@ -37,7 +37,7 @@ TreeNode<T>::TreeNode()
 }
 
 template <class T>
-TreeNode<T>:TreeNode(T d)
+TreeNode<T>::TreeNode(T d)
 {
     /*
     Overloaded constructor sets pointers to NULL and data+key to the input

@@ -17,6 +17,7 @@ the assumption that this thing either works or will work eventually.
 using namespace std;
 
 
+
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //                class BST                                                 class BST
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -31,17 +32,18 @@ class BST {
     public:
         BST();
         ~BST();
-        void insert(T data);
-        TreeNode<T>* search(int key);
+        int insert(T data);
+        TreeNode<T>* search(T key);
         bool isEmpty();
         TreeNode<T>* getMin();
         TreeNode<T>* getMax();
         void print(TreeNode<T>* node);
         void printTree();
+        bool deleteN(T k);
     private:
         TreeNode<T>* root;
         void deleteTree(TreeNode<T>* node);
-        getSuccessor(TreeNode<T>* d)
+        TreeNode<T>* getSuccessor(TreeNode<T>* d);
 };
 
 
@@ -63,62 +65,28 @@ BST<T>::~BST()
     deleteTree(root);
 }
 
-
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //                       deleteTree                                       deleteTree
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // A helper function for the destructor
 template <class T>
-BST<T>::deleteTree(TreeNode<T>* node) {
-    deleteTree(node->left);
-    deleteTree(node->right);
-    if (node==NULL) {
-        return;
+void BST<T>::deleteTree(TreeNode<T>* node)
+{
+    if (node != NULL) {
+        deleteTree(node->left);
+        deleteTree(node->right);
+        delete node;
     }
-    delete node;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// In testing/development below here
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //                       insert                                                 insert
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /*
- * insert(data) takes a key and data as input and place it in the tree
+ * insert(data) takes data and place it in the tree
  * returns an error code:
  *    0: worked normally
- *    1: position at key full
+ *    1: position full
  */
 template <class T>
 int BST<T>::insert(T data)
@@ -166,7 +134,6 @@ int BST<T>::insert(T data)
     }
 }
 
-
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //                       search                                                 search
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -178,7 +145,7 @@ int BST<T>::insert(T data)
  * Code is largely copied from insert.
  */
 template <class T>
-TreeNode<T>* BST<T>::search(int key)
+TreeNode<T>* BST<T>::search(T key)
 {
     if (isEmpty())
     {
@@ -197,7 +164,7 @@ TreeNode<T>* BST<T>::search(int key)
                     return NULL;
                 }
             }
-            else if (key > curr->key) //go right
+            else if (key > curr->data) //go right
             {
                 curr = curr->right;
                 if (curr==NULL) //end of branch, not found
@@ -222,7 +189,6 @@ bool BST<T>::isEmpty()
 {
     return root==NULL;
 }
-
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //                       getMin                                                  getMin
@@ -279,6 +245,7 @@ void BST<T>::print(TreeNode<T>* node)
         return;
     }
     print(node->left);
+    //cout << node->data << endl; //uncomment this line and comment out the next for test with ints
     node->data.print(); // Requires data type to have defined print() function
     print(node->right);
 }
@@ -308,7 +275,7 @@ TreeNode<T>* BST<T>::getSuccessor(TreeNode<T>* d)
     
     while(current != NULL)
     {
-        sp = sucessor;
+        sp = successor;
         successor = current;
         current = current->left;
     }
@@ -331,7 +298,7 @@ TreeNode<T>* BST<T>::getSuccessor(TreeNode<T>* d)
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // deletes node with key k and returns true if sucessful, false if unsucessful
 template <class T>
-bool BST<T>::deleteN(int k)
+bool BST<T>::deleteN(T k)
 {
     //if leaf, easy
     //if 1 child, sorta easy
@@ -345,12 +312,12 @@ bool BST<T>::deleteN(int k)
     
     TreeNode<T>* parent = root;
     TreeNode<T>* current = root;
-    bool isleft= true;
+    bool isLeft = true;
     
-    while (current->key != k) //look for node to delete
+    while (current->data != k) //look for node to delete
     {
         parent = current;
-        if(k < current->key) //go left
+        if(k < current->data) //go left
         {
             isLeft = true;
             current = current->left;
@@ -416,7 +383,7 @@ bool BST<T>::deleteN(int k)
     }
     else //two children
     {
-        TreeNode *successor = getSuccessor(current);
+        TreeNode<T> *successor = getSuccessor(current);
         
         if(current==root)
         {
