@@ -7,18 +7,17 @@
 #include "student.h"
 #include "fileio.h"
 #include "rollbackstack.h"
+#include "userinput.h"
 
 using std::string;
 using std::cout;
 using std::endl;
 using std::cin;
-using std::stoi;
-using std::stod;
 using std::rand;
 
 
-string stuFilePath = "../saved/studentTable";
-string facFilePath = "../saved/facultyTable";
+string stuFilePath = "studentTable";
+string facFilePath = "facultyTable";
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //                Constructor                              		            Constructor
@@ -37,24 +36,48 @@ Database::Database()
     studentBST = new BST<Student>;
     facultyBST = new BST<Faculty>;
     
-    // import files if they exist
-    if ( filesExist() )
+    // import student file if it exist
+    std::ifstream stuFile ( stuFilePath.c_str() );
+    if ( stuFile.is_open() )
     {
+        stuFile.close(); //import function opens, this was just to check
+        cout << "Student data found. Attempting Import." << endl;
         // import databases
         int stuImportCode = importStudentTree(studentBST, stuFilePath);
-        int facImportCode = importFacultyTree(facultyBST, facFilePath);
         
         // if import fails, delete BST in case it has been partially modified and make a blank one
         if (stuImportCode==1)
         {
+            cout << "Student data import failed." << endl;
             delete studentBST;
             studentBST = new BST<Student>;
         }
+    }
+    else
+    {
+        cout << "No existing student table found. Generating blank student table." << endl;
+    }
+    
+    // import faculty file if it exist
+    std::ifstream facFile ( facFilePath.c_str() );
+    if ( facFile.is_open() )
+    {
+        facFile.close(); //import function opens, this was just to check
+        cout << "Faculty data found. Attempting Import." << endl;
+        // import databases
+        int facImportCode = importFacultyTree(facultyBST, facFilePath);
+        
+        // if import fails, delete BST in case it has been partially modified and make a blank one
         if (facImportCode==1)
         {
+            cout << "Faculty data import failed." << endl;
             delete facultyBST;
             facultyBST = new BST<Faculty>;
         }
+    }
+    else
+    {
+        cout << "No existing faculty table found. Generating blank faculty table." << endl;
     }
 }
 
@@ -110,9 +133,7 @@ void Database::showMenu()
     cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
     
     // Get user input
-    cin >> userInput;
-    intInput = stoi(userInput);
-    switch(intInput)
+    switch( getIntInput() )
     {
         case 1 : printAllStudents();
                  break;
@@ -139,7 +160,6 @@ void Database::showMenu()
         case 12: removeAdvisee(); //loop
                  break;
         case 13: rollback();
-                 cout << "The database has been rolled back" << endl;
                  break;
         case 14: exit();
                  break;
@@ -195,14 +215,10 @@ void Database::findStudent() //3
 	cout << "Search by student ID number" << endl;
 	cout << "\tEnter student ID number: ";
     
-    // get input from user
-    string userInput;
-	cin >> userInput;
-	int studentID = stoi(userInput);
-    
     // create pointer to node with student
     TreeNode<Student> *stu;
-    stu = studentBST->search(studentID);
+    int studentID = getIntInput();
+    stu = studentBST->search( studentID );
     
 	if ( stu != NULL) { // student found
 		stu->data.print(); // prints all data on student
@@ -229,9 +245,7 @@ void Database::findFaculty() //4
 	cout << "\tEnter faculty ID number: ";
     
     // get input from user
-	string userInput;
-    cin >> userInput;
-	int facultyID = stoi(userInput);
+	int facultyID = getIntInput();
     
     // create pointer to node with faculty
     TreeNode<Faculty> *fac;
@@ -263,9 +277,7 @@ void Database::myAdvisorIs() //5
 	cout << "\tEnter student ID number: ";
     
     // get user input
-    string userInput;
-    cin >> userInput;
-	int studentID = stoi(userInput);
+	int studentID = getIntInput();
     
     // create pointer to node with student
     TreeNode<Student> *stu;
@@ -302,9 +314,7 @@ void Database::myAdviseesAre() //6
 	cout << "\tEnter faculty ID number: ";
     
     //get user input
-    string userInput;
-	cin >> userInput;
-	int facultyID = stoi(userInput);
+	int facultyID = getIntInput();
     
     //create pointer to node with faculty
     TreeNode<Faculty> *fac;
@@ -317,7 +327,7 @@ void Database::myAdviseesAre() //6
 	}
 	else //not found
     {
-		cout << "Faculty member does not exist." << endl;
+		cout << "Faculty member #" << facultyID << " does not exist." << endl;
     }
 }
 
@@ -359,16 +369,15 @@ bool Database::addStudent( int ID
     TreeNode<Faculty> *fac;
     fac = facultyBST->search(advisor);
     
+    //push current tree to the stack
+    rollbackPushTrees();
+    
     //update advisor's list of students
     fac->data.students.insertFront(ID);
     fac->data.numStudents++;
     
-    
-    //push current tree to the stack
-    rollbackPushTrees();
-    
     //add the student to the tree
-    studentBST->insert(stu);
+    studentBST->insert(&stu);
     return true;
 }
 
@@ -400,9 +409,8 @@ void Database::addStudentPrompt() //7
     string studentMajor;
 	cin >> studentMajor;
 	cout << "Enter student GPA: " << endl;
-    string userInput;
-	cin >> userInput;
-	double studentGPA = stod(userInput);
+	double studentGPA;
+	cin >> studentGPA;
     int studentAdvisor = advisorPrompt();
     
     if (studentAdvisor==-1)
@@ -446,18 +454,16 @@ void Database::addStudentPrompt() //7
 int Database::advisorPrompt()
 {
     //get user input
-    string userInput;
     cout << "Input student advisor ID#: " << endl;
-    cin >> userInput;
-    int studentAdvisor = stoi(userInput);
+    int studentAdvisor = getIntInput();
     
     //if input is invalid
     if ( facultyBST->search(studentAdvisor)==NULL ) // if advisor does not exist
     {
         //check if they want to try again to let them break out of loops
         cout << "Advisor must exist. Try again? (y)" << endl;
-        cin >> userInput;
-        if (userInput=="y")
+        char userInput = getCharInput();
+        if (userInput=='y')
         {
             return advisorPrompt();
         }
@@ -485,9 +491,7 @@ int Database::advisorPrompt()
 string Database::promptForClass()
 {
 	cout << "Enter student's class standing: \n\t(1) Freshman \n\t(2) Sophomore \n\t(3) Junior \n\t(4) Senior \n\t(5) Graduate student" << endl;
-    string userInput;
-	cin >> userInput;
-	int classLevel = stoi(userInput);
+	int classLevel = getIntInput();
 	if (classLevel ==1)
 		return "Freshman";
 	else if (classLevel ==2)
@@ -523,9 +527,7 @@ void Database::deleteStudent()
 	cout << "\tEnter student ID: " << endl;
     
     //get user input
-    string userInput;
-	cin >> userInput;
-	int studentID = stoi(userInput);
+	int studentID = getIntInput();
     
     //create a pointer to node with student
     TreeNode<Student> *stu;
@@ -599,7 +601,7 @@ bool Database::addFaculty( int ID
     }
     
     //place faculty in tree
-    facultyBST->insert(fac);
+    facultyBST->insert(&fac);
     
     return true;
 }
@@ -636,9 +638,7 @@ void Database::addFacultyPrompt() //9
     cin >> facultyDept;
     //need to know how many students to advise
     cout << "How many students does this faculty member advise?: " << endl;
-    string userInput;
-    cin >> userInput;
-    int N = stoi(userInput);
+    int N = getIntInput();
     //create list for student ID
     DList<int> facultyStudents;
     int inputStuID;
@@ -648,8 +648,7 @@ void Database::addFacultyPrompt() //9
     {
         //get user input for student ID
         cout << "Enter advisee's ID#: " << endl;
-        cin >> userInput;
-        inputStuID = stoi(userInput);
+        inputStuID = getIntInput();
         
         //if valid, add student to list
         if (studentBST->search(inputStuID) != NULL)
@@ -661,8 +660,8 @@ void Database::addFacultyPrompt() //9
         {
             //check if they want to try again to let them break out of loops
             cout << "Student must exist. Try again? (y): " << endl;
-            cin >> userInput;
-            if (userInput!="y")
+            char userInput = getCharInput();
+            if (userInput!='y')
             {
                 cout << "New faculty member aborted." << endl;
                 rollback();
@@ -705,10 +704,8 @@ void Database::addFacultyPrompt() //9
 
 string Database::professorship()
 {
-    string userInput;
 	cout << "Enter faculty member's level of professorship: \n\t(1) Full Professor \n\t(2) Assistant Professor \n\t(3) Associate Professor \n\t(4) Adjunct Professor \n\t(5) Lecturer" << endl;
-	cin >> userInput;
-	int profLevel = stoi(userInput);
+	int profLevel = getIntInput();
 	if (profLevel ==1)
 		return "Full Professor";
 	else if (profLevel ==2)
@@ -744,9 +741,7 @@ void Database::deleteFaculty() //10
 	cout << "\tEnter faculty ID: " << endl;
     
     //get user input
-    string userInput;
-	cin >> userInput;
-	int facultyID = stoi(userInput);
+	int facultyID = getIntInput();
     
     //create pointer to the node with faculty
     TreeNode<Faculty> *fac;
@@ -800,24 +795,27 @@ void Database::changeAdvisor(int stuID) //11
     
     //get user input
     cout << "Enter new advisor's ID for student #" << stuID << endl;
-    string userInput;
-    cin >> userInput;
-    int newFacID = stoi(userInput);
+    int newFacID = getIntInput();
     
     //get a pointer to the new advisor node
     TreeNode<Faculty> *newFac;
     newFac = facultyBST->search(newFacID);
     
-    //if advisor doesn't exist, recursively make user try again
-    if (newFac==NULL)
+    //if advisor doesn't exist or is already the students advisor, recursively make user try again
+    if (newFac==NULL || newFac == oldFac)
     {
-        cout << "Try again. Advisor must exist." << endl;
-        changeAdvisor(stuID);
+        if (newFac==NULL) {
+            cout << "Advisor must exist." << endl;
+        }
+        else {
+            //newFac==oldFac causes segfaults
+            cout << "Advisor cannot be student's current advisor" << endl;
+        }
         
         //check if they want to try again to let them break out of loops
-        cout << "Advisor must exist. Try again? (y)" << endl;
-        cin >> userInput;
-        if (userInput=="y")
+        cout << "Try again? (y)" << endl;
+        char userInput = getCharInput();
+        if (userInput=='y')
         {
             changeAdvisor(stuID);
         }
@@ -856,12 +854,10 @@ void Database::changeAdvisorPrompt()
     cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
     
     //get user inputs
-    string userInput;
     int stuID;
     cout << "Change advisor in student record" << endl;
     cout << "\tEnter student ID:" << endl;
-    cin >> userInput;
-    stuID = stoi(userInput);
+    stuID = getIntInput();
     
     //if student exists, call changeAdvisor(stuID)
     if (studentBST->search(stuID) != NULL)
@@ -872,8 +868,8 @@ void Database::changeAdvisorPrompt()
     {
         //check if they want to try again to let them break out of loops
         cout << "Student must exist. Try again? (y)" << endl;
-        cin >> userInput;
-        if (userInput=="y")
+        char userInput = getCharInput();
+        if (userInput=='y')
         {
             return changeAdvisorPrompt();
         }
@@ -904,9 +900,7 @@ void Database::removeAdvisee() //12
 	cout << "\tEnter faculty ID: " << endl;
     
     //get user input for faculty ID
-    string userInput;
-	cin >> userInput;
-	int facultyID = stoi(userInput);
+	int facultyID = getIntInput();
     
     //get pointer to faculty node
     TreeNode<Faculty> *fac;
@@ -917,8 +911,7 @@ void Database::removeAdvisee() //12
 	{
         //get user input for student ID
 		cout << "\tEnter student ID: " << endl;
-		cin >> userInput;
-		int studentID = stoi(userInput);
+		int studentID = getIntInput();
         
         //get a pointer to the student node
         TreeNode<Student> *stu;
@@ -1003,7 +996,7 @@ void Database::rollback() //13
         //rollback faculty
         BST<Faculty> *backupFaculty;
         backupFaculty =  facultyRollback.pop();
-        if (backupFaculty==NULL)
+        if (backupFaculty==NULL) //was blank before edit
         {
             delete facultyBST;
             facultyBST = new BST<Faculty>;
@@ -1027,6 +1020,8 @@ void Database::rollback() //13
             delete studentBST;
             studentBST = backupStudent;
         }
+        
+        cout << "The database has been rolled back" << endl;
     }
 }
 

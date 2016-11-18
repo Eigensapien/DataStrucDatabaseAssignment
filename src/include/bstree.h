@@ -18,7 +18,7 @@ class BST {
     public:
         BST();
         ~BST();
-        int insert(T data);
+        int insert(T *data);
         TreeNode<T>* search(int key);
         bool isEmpty();
         TreeNode<T>* getMin();
@@ -69,18 +69,19 @@ void BST<T>::deleteTree(TreeNode<T>* node)
 //                       insert                                                 insert
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /*
- * insert(data) takes data and place it in the tree
+ * insert(data) takes a pointer to a piece of data and places the data in the tree
  * returns an error code:
  *    0: worked normally
  *    1: position full
  */
 template <class T>
-int BST<T>::insert(T data)
+int BST<T>::insert(T *data)
 {
-    TreeNode<T>* node = new TreeNode<T>(data);
+    TreeNode<T>* node = new TreeNode<T>( *data );
     if (isEmpty())
     { // single-element tree
         root=node;
+std::cout << "testD" << std::endl;
     }
     else
     { // search the tree for key
@@ -89,7 +90,7 @@ int BST<T>::insert(T data)
         while (true)
         {
             parent = curr;
-            if (data < curr->data) //go left
+            if (*data < curr->data) //go left
             {
                 curr = curr->left;
                 if (curr==NULL) //found leaf
@@ -98,7 +99,7 @@ int BST<T>::insert(T data)
                     return 0;
                 }
             }
-            else if (data > curr->data) //go right
+            else if (*data > curr->data) //go right
             {
                 curr = curr->right;
                 if (curr==NULL) //found leaf
@@ -117,6 +118,8 @@ int BST<T>::insert(T data)
                 return 1;
             }
         }
+        curr = NULL;
+        parent = NULL;
     }
 }
 

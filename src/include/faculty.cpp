@@ -17,13 +17,21 @@ void Faculty::print()
 
 void Faculty::printAdvisees(BST<Student> *studentBST)
 {
+    //create pointer to student node
     TreeNode<Student> *stu;
-    int studentID;
+    
+    //pointer to current student id node
     ListNode<int> *curr = students.front;
+    
     while (curr != NULL)
     {
-        stu = studentBST->search(studentID);
+        //set student node pointer
+        stu = studentBST->search(curr->data);
+        
+        //print student data
         stu->data.print();
+        
+        //move to next student in list
         curr = curr->next;
     }
 }

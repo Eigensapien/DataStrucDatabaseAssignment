@@ -3,13 +3,11 @@
 #include <string>
 #include "bstree.h"
 #include "listnode.h" //to navigate faculty list
+#include "userinput.h"
 
 using std::string;
 using std::cout;
-using std::cin;
 using std::endl;
-using std::stoi;
-using std::stod;
 using std::ofstream;
 using std::ifstream;
 
@@ -59,29 +57,30 @@ int importStudentTree(BST<Student> *tree, string filename)
         return 1;
     }
     
-    Student stu;
+    Student *stu = new Student; //tree insert takes care of this for us
     
     while (currLine=="_STARTSTUDENT_") //ie. until we run out of students
     {
         getline(ifs, currLine); // ID number
-        stu.ID = std::stoi(currLine); //convert to int
+        stu->ID = stringToInt(currLine); //convert to int
         
-        getline(ifs, stu.name);  //name
-        getline(ifs, stu.level); //level
-        getline(ifs, stu.major); //major
+        getline(ifs, stu->name);  //name
+        getline(ifs, stu->level); //level
+        getline(ifs, stu->major); //major
         
         getline(ifs, currLine); //GPA
-        stu.GPA = std::stod(currLine); //convert to double
+        stu->GPA = stringToDouble(currLine); //convert to double
         
         getline(ifs,currLine); //advisor
-        stu.advisor = std::stoi(currLine); //convert to int
+        stu->advisor = stringToInt(currLine); //convert to int
         
         tree->insert(stu); //place the student in the tree
         
         getline(ifs, currLine); // "_STARTSTUDENT_" if there is another, "_ENDFILE_" otherwise
     }
-    
     cout << "Student data has been imported." << endl;
+    stu=NULL;
+    return 0;
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -96,7 +95,9 @@ int importStudentTree(BST<Student> *tree, string filename)
  *                                                                                    *
  * Returns an error code                                                              *
  * 0: imported properly                                                               *
- * 1: import failed                                                                   *
+ * 1: import failed
+ *
+ * If files are not in proper format, segfaults can occur
  **************************************************************************************/
 
 int importFacultyTree(BST<Faculty> *tree, string filename)
@@ -112,12 +113,10 @@ int importFacultyTree(BST<Faculty> *tree, string filename)
     
     string currLine;
     getline(ifs, currLine); //First line should be "_STARTFACULTY_"
-cout << "_start_" << endl;
     
     // if the first line is "_EMPTY_" we can stop. We already have an empty tree.
     if (currLine == "_EMPTY_")
     {
-cout << "_empty_" << endl;
         return 0;
     }
     
@@ -129,34 +128,33 @@ cout << "_empty_" << endl;
         return 1;
     }
     
-    Faculty fac;
+    Faculty *fac = new Faculty; //this is deleted when inserted into the tree
     int numStu;
     
     while (currLine=="_STARTFACULTY_") //ie. until we run out of faculty
     {
-cout << "while" << endl;
         getline(ifs, currLine); // ID number
-        fac.ID = std::stoi(currLine); //convert to int
-        
-        getline(ifs, fac.name);  //name
-        getline(ifs, fac.level); //level
-        getline(ifs, fac.dept);  //dept
+        fac->ID = stringToInt(currLine); //convert to int
+
+        getline(ifs, fac->name);  //name
+        getline(ifs, fac->level); //level
+        getline(ifs, fac->dept);  //dept
         
         getline(ifs, currLine); //number of students
-        numStu = std::stoi(currLine); //convert to int
+        numStu = stringToInt(currLine); //convert to int
         
         for (int i=0; i<numStu; ++i) //loop over list of students
         {
             getline(ifs, currLine); //student's ID
-            fac.students.insertFront( std::stoi(currLine) ); //convert to int and add to list
+            fac->students.insertFront( stringToInt(currLine) ); //convert to int and add to list
         }
         
-cout << "about to put in tree" << endl;
         tree->insert(fac); //put the faculty in the tree
         
         getline(ifs, currLine); // "_STARTFACULTY_" if there are more, "_ENDFILE_" otherwise
     }
     cout << "Faculty data has been imported." << endl;
+    fac = NULL;
     return 0;
 }
 
@@ -219,7 +217,7 @@ void saveStudentTreeToFile(BST<Student> *tree, string filename)
     
     if ( tree->isEmpty() )
     {
-        ofs << "_EMPTY_";
+        ofs << "_EMPTY_" << endl;
     }
     else
     {
@@ -236,7 +234,6 @@ void saveStudentTreeToFile(BST<Student> *tree, string filename)
 //output list of students
 void facStuToFile(Faculty *fac, ofstream *ofs)
 {
-    cout << "facStuToFile" << endl;
     if (fac->numStudents==0) {
         return;
     }
@@ -252,7 +249,6 @@ void facStuToFile(Faculty *fac, ofstream *ofs)
 //formats and prints data from faculty
 void facToFile(Faculty *fac, ofstream *ofs)
 {
-    cout << "facToFile" << endl;
     *ofs << "_STARTFACULTY_" << endl;
 	*ofs << fac->ID          << endl;
 	*ofs << fac->name        << endl;
@@ -265,7 +261,6 @@ void facToFile(Faculty *fac, ofstream *ofs)
 //Recursive pre-order traversal
 void saveFacRecur(TreeNode<Faculty> *root, ofstream *ofs)
 {
-    cout << "saveFacRecur" << endl;
     if ( root != NULL )
     {
 	    facToFile(&(root->data), ofs);
@@ -306,7 +301,7 @@ void saveFacultyTreeToFile(BST<Faculty> *tree, std::string filename)
 	
     if ( tree->isEmpty() )
     {
-        ofs << "_EMPTY_";
+        ofs << "_EMPTY_" << endl;
     }
     else
     {

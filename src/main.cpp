@@ -1,10 +1,11 @@
 #include <iostream>
 #include "./include/bstree.h"
 #include "./include/student.h"
+#include "./include/rollbackstack.h"
 #include "./include/faculty.cpp"
 #include "./include/fileio.cpp"
 #include "./include/dbfuncs.cpp"
-#include "./include/rollbackstack.h"
+#include "./include/userinput.cpp"
 
 // main is very simple, since the Database class handles everything
 
