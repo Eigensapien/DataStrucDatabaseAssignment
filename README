@@ -1,38 +1,5 @@
-Person Class:
-	int ID
-	string name
-	string level
-	overload all comparison operators to compare ID
-		need Person to Person (for insert) and int to Person (for search) comparison
+This program uses a BST to impliment a database for students and faculty.
 
-Student Class:
-	subclass of Person
-	string major
-	double GPA
+Created by Eric Freda and Kristalee Lio as Assignment 5 for Data Structures at Chapman University.
 
-Faculty Class:
-	subclass of Person
-	string dept
-	list of ints of advisees
-		need a list class
-
-Trees:
-	should do normal tree stuff
-
-File I/O functions:
-	check for file
-	create empty trees
-	import trees
-	save trees
-
-Database Functions:
-	all the stuff from the assignment sheet
-	can probably do most of these as functions that take pointers to trees as arguments
-	need to be careful when deleting people to update stuff correctly
-	need to update the rollback stack when needed
-	when creating people, need to make sure their ID is unique
-		idea: when placing in tree, if already taken generate a new id and try again
-
-Rollback Stack:
-	need a stack that can hold last five versions of the tree
-	probably want to delete the bottom of the stack when it exceeds size 5 to avoid clogging up memory
+http://www.cplusplus.com/ used for built-in function syntax and reference
